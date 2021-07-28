@@ -9,9 +9,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import br.com.samuelnunes.sinricapp.data.DTO.LoginDTO
 import br.com.samuelnunes.sinricapp.databinding.FragmentLoginBinding
+import br.com.samuelnunes.sinricapp.extensions.afterTextChanged
+import br.com.samuelnunes.sinricapp.extensions.defineError
+import br.com.samuelnunes.sinricapp.extensions.showWhile
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 /**
  * @author Samuel da Costa Araujo Nunes
@@ -33,18 +38,41 @@ class LoginFragment : Fragment() {
         }.root
     }
 
+    @ExperimentalCoroutinesApi
+    @FlowPreview
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.loginConfirm.setOnClickListener {
             lifecycleScope.launch {
-                val login = viewModel.login(
-                    LoginDTO(
-                        binding.email.text.toString(),
-                        binding.password.text.toString()
+                binding.progressBar.showWhile {
+                    val login = viewModel.login(
+                        LoginDTO(
+                            binding.email.text.toString(),
+                            binding.password.text.toString()
+                        )
                     )
-                )
-                Timber.d(login.account.name)
+                    val code = login?.code() ?: 500
+                    Snackbar.make(
+                        view,
+                        when (code) {
+                            200 -> "Bem vindo ${login!!.body()!!.account.name}!!!"
+                            403 -> "Usuario ou senha incorreto!!"
+                            500 -> "Sem conexão com a Internet!"
+                            else -> "Deu ruim"
+                        },
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
             }
         }
+
+        lifecycleScope.launchWhenCreated {
+            binding.emailInputLayout.apply {
+                afterTextChanged {
+                    defineError(viewModel.validateEmail(it))
+                }
+            }
+        }
+
     }
 }

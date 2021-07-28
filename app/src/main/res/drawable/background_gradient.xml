@@ -4,8 +4,8 @@
     android:layout_height="match_parent">
     <gradient
         android:angle="135"
-        android:centerColor="?attr/colorPrimaryVariant"
-        android:endColor="?attr/colorPrimary"
+        android:centerColor="?attr/colorPrimary"
+        android:endColor="?attr/colorPrimaryVariant"
         android:startColor="?attr/colorSecondary"
         android:type="linear" />
 </shape>

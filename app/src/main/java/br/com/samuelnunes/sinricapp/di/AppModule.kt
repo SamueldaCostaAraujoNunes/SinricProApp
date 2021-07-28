@@ -1,5 +1,9 @@
 package br.com.samuelnunes.sinricapp.di
 
+import android.content.Context
+import androidx.room.Room
+import br.com.samuelnunes.sinricapp.TABLE_NAME
+import br.com.samuelnunes.sinricapp.data.local.AppDatabase
 import br.com.samuelnunes.sinricapp.data.remote.MyInterceptor
 import br.com.samuelnunes.sinricapp.data.remote.SinricService
 import br.com.samuelnunes.sinricapp.data.repository.SinricRepository
@@ -7,6 +11,7 @@ import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -41,8 +46,21 @@ object AppModule {
     fun provideCharacterService(retrofit: Retrofit): SinricService =
         retrofit.create(SinricService::class.java)
 
+    @Provides
+    @Singleton
+    fun database(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(context, AppDatabase::class.java, TABLE_NAME)
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+
     @Singleton
     @Provides
-    fun provideSinricRepository(sinricService: SinricService): SinricRepository =
-        SinricRepository(sinricService)
+    fun provideSinricRepository(
+        database: AppDatabase,
+        sinricService: SinricService
+    ): SinricRepository =
+        SinricRepository(database, sinricService)
+
+
 }

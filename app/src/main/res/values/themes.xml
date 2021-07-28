@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.SinricApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#6A46CA</item>
-        <item name="colorPrimaryVariant">#A486F5</item>
+        <item name="colorPrimary">#A486F5</item>
+        <item name="colorPrimaryVariant">#6A46CA</item>
         <item name="colorOnPrimary">@color/white</item>
 
         <!-- Secondary brand color. -->
